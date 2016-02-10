@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# find available scuff subcommands
+subcommands=$(compgen -c | grep '^scuff-' | sed 's/^scuff\-//' | sort)
+
+function help () {
+    echo "SCUFF-EM: Free, open-source software for boundary-element analysis"
+    echo "of problems in computational physics and engineering."
+    echo
+    echo "Please specify a valid subcommand. Available subcommands:"
+    for c in $subcommands; do
+	echo "  $c"
+    done
+    exit
+}
+
+if [[ $# == 0 || ${1:0:1} == '-' ]]; then
+    help
+fi
+
+subcmd=$1; shift
+if [[ "$subcommands" =~ "$subcmd" ]]; then
+    scuff-${subcmd} "$@"
+else
+    echo "Invalid subcommand '$subcmd'"
+    help
+fi
