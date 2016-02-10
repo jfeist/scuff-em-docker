@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # find available scuff subcommands
-subcommands=$(compgen -c | grep '^scuff-' | sed 's/^scuff\-//' | sort)
+subcommands=$(compgen -c scuff- | sed 's/^scuff-//' | sort)
 
 function help () {
     echo "SCUFF-EM: Free, open-source software for boundary-element analysis"
