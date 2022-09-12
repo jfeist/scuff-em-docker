@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 # install the packages necessary to compile scuff-em,
 # and clean up as much as possible afterwards to keep the image small
@@ -22,9 +22,10 @@ RUN apt-get update && \
 # clone the latest scuff-em version from github, compile and install it, and then
 # delete the build directory (again to keep the image small)
 RUN cd /tmp && \
-    git clone https://github.com/texnokrates/scuff-em.git && \
+    git clone https://github.com/jfeist/scuff-em.git && \
     cd scuff-em && \
-    ./autogen.sh --with-hdf5-includedir=/usr/include/hdf5/serial --with-hdf5-libdir=/usr/lib/x86_64-linux-gnu/hdf5/serial && \
+    git checkout 83c5ff252a0a69131505f1e4d1c6ca54114738e7 && \
+    ./autogen.sh --with-hdf5-includedir=/usr/include/hdf5/serial --with-hdf5-libdir=/usr/lib/$(uname -m)-linux-gnu/hdf5/serial && \
     make -j 4 install && \
     ldconfig && \
     cd .. && \
