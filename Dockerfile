@@ -2,8 +2,8 @@ FROM ubuntu:22.04
 
 # install the packages necessary to compile scuff-em,
 # and clean up as much as possible afterwards to keep the image small
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       build-essential \
       automake \
       libtool \
@@ -15,21 +15,21 @@ RUN apt-get update && \
       liblapack-dev \
       libhdf5-serial-dev \
       ca-certificates \
-      git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/lib/apt/lists/* /tmp/* /var/tmp/*
+      git \
+      python3-dev \
+      python3-numpy \
+      swig \
+    && rm -rf /var/lib/apt/lists/*
 
-# clone the latest scuff-em version from github, compile and install it, and then
-# delete the build directory (again to keep the image small)
-RUN cd /tmp && \
-    git clone https://github.com/jfeist/scuff-em.git && \
-    cd scuff-em && \
-    git checkout 83c5ff252a0a69131505f1e4d1c6ca54114738e7 && \
-    ./autogen.sh --with-hdf5-includedir=/usr/include/hdf5/serial --with-hdf5-libdir=/usr/lib/$(uname -m)-linux-gnu/hdf5/serial && \
-    make -j 4 install && \
-    ldconfig && \
-    cd .. && \
-    rm -r scuff-em
+# clone the latest scuff-em version from github, compile and install it
+RUN cd /tmp \
+    && git clone https://github.com/jfeist/scuff-em.git \
+    && cd scuff-em \
+    && git checkout 83c5ff252a0a69131505f1e4d1c6ca54114738e7 \
+    && ./autogen.sh --with-hdf5-includedir=/usr/include/hdf5/serial --with-hdf5-libdir=/usr/lib/$(uname -m)-linux-gnu/hdf5/serial \
+    && make -j 4 install \
+    && ldconfig \
+    && git clean -fxd
 
 # add a "dispatcher" script that can be called as, e.g.,
 # "scuff scatter" (which just calls scuff-scatter), and
